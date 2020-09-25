@@ -1126,6 +1126,9 @@ again:
 			continue;
 		}
 
+		if (need_resched())
+			break;
+
 		if (pte_present(ptent)) {
 			struct page *page;
 
@@ -1206,9 +1209,11 @@ again:
 	if (force_flush) {
 		force_flush = 0;
 		tlb_flush_mmu_free(tlb);
+	}
 
-		if (addr != end)
-			goto again;
+	if (addr != end) {
+		cond_resched();
+		goto again;
 	}
 
 	return addr;
@@ -2878,9 +2883,13 @@ void do_set_pte(struct vm_area_struct *vma, unsigned long address,
 	/* no need to invalidate: a not-present page won't be cached */
 	update_mmu_cache(vma, address, pte);
 }
-
+#ifdef CONFIG_FAULT_AROUND_4KB
+static unsigned long fault_around_bytes __read_mostly =
+	rounddown_pow_of_two(4096);
+#else
 static unsigned long fault_around_bytes __read_mostly =
 	rounddown_pow_of_two(65536);
+#endif
 
 #ifdef CONFIG_DEBUG_FS
 static int fault_around_bytes_get(void *data, u64 *val)

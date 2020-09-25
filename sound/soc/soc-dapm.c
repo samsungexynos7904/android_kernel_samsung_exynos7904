@@ -1149,6 +1149,18 @@ static int is_connected_input_ep(struct snd_soc_dapm_widget *widget,
 			is_connected_input_ep);
 }
 
+int snd_soc_dapm_connected_output_ep(struct snd_soc_dapm_widget *widget,
+	struct list_head *list)
+{
+	return is_connected_output_ep(widget, list);
+}
+
+int snd_soc_dapm_connected_input_ep(struct snd_soc_dapm_widget *widget,
+	struct list_head *list)
+{
+	return is_connected_input_ep(widget, list);
+}
+
 /**
  * snd_soc_dapm_get_connected_widgets - query audio path and it's widgets.
  * @dai: the soc DAI.
@@ -1488,6 +1500,9 @@ static void dapm_seq_run(struct snd_soc_card *card,
 
 	list_for_each_entry_safe(w, n, list, power_list) {
 		ret = 0;
+
+		dev_info(w->dapm->dev, "dapm powering %s widget %s\n",
+				power_up ? "up" : "down", w->name);
 
 		/* Do we need to apply any queued changes? */
 		if (sort[w->id] != cur_sort || w->reg != cur_reg ||

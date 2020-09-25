@@ -13,12 +13,14 @@
 #include <linux/poll.h>
 #include <linux/uio.h>
 #include <linux/miscdevice.h>
+#include <linux/namei.h>
 #include <linux/pagemap.h>
 #include <linux/file.h>
 #include <linux/slab.h>
 #include <linux/pipe_fs_i.h>
 #include <linux/swap.h>
 #include <linux/splice.h>
+#include <linux/freezer.h>
 
 MODULE_ALIAS_MISCDEV(FUSE_MINOR);
 MODULE_ALIAS("devname:fuse");
@@ -228,7 +230,8 @@ static struct fuse_req *get_reserved_req(struct fuse_conn *fc,
 	struct fuse_file *ff = file->private_data;
 
 	do {
-		wait_event(fc->reserved_req_waitq, ff->reserved_req);
+		/* @fs.sec -- 9992f9e9ebd25b0dcc80951a9e4f4fc2e71a08c6 -- */
+		fuse_wait_event(fc->reserved_req_waitq, ff->reserved_req);
 		spin_lock(&fc->lock);
 		if (ff->reserved_req) {
 			req = ff->reserved_req;
@@ -277,7 +280,7 @@ struct fuse_req *fuse_get_req_nofail_nopages(struct fuse_conn *fc,
 	struct fuse_req *req;
 
 	atomic_inc(&fc->num_waiting);
-	wait_event(fc->blocked_waitq, fc->initialized);
+	fuse_wait_event(fc->blocked_waitq, fc->initialized);
 	/* Matches smp_wmb() in fuse_set_initialized() */
 	smp_rmb();
 	req = fuse_request_alloc(0);
@@ -495,7 +498,9 @@ static void request_wait_answer(struct fuse_conn *fc, struct fuse_req *req)
 	 * Either request is already in userspace, or it was forced.
 	 * Wait it out.
 	 */
-	wait_event(req->waitq, test_bit(FR_FINISHED, &req->flags));
+	while (!test_bit(FR_FINISHED, &req->flags))
+		wait_event_freezable(req->waitq,
+				test_bit(FR_FINISHED, &req->flags));
 }
 
 static void __fuse_request_send(struct fuse_conn *fc, struct fuse_req *req)
@@ -789,7 +794,7 @@ static int fuse_copy_fill(struct fuse_copy_state *cs)
 			if (cs->nr_segs == cs->pipe->buffers)
 				return -EIO;
 
-			page = alloc_page(GFP_HIGHUSER);
+			page = alloc_page(GFP_NOFS);
 			if (!page)
 				return -ENOMEM;
 
@@ -1264,6 +1269,13 @@ static ssize_t fuse_dev_do_read(struct fuse_dev *fud, struct file *file,
 	struct fuse_req *req;
 	struct fuse_in *in;
 	unsigned reqsize;
+
+	/* @fs.sec -- 6101dd42ae34a95fe90de8d0463135d3d84a2558 -- */
+	if ((current->flags & PF_NOFREEZE) == 0) {
+		current->flags |= PF_NOFREEZE;
+		printk_ratelimited(KERN_WARNING "%s(%d): This thread should not be frozen\n",
+				current->comm, task_pid_nr(current));
+	}
 
  restart:
 	spin_lock(&fiq->waitq.lock);
@@ -1962,6 +1974,12 @@ static ssize_t fuse_dev_do_write(struct fuse_dev *fud,
 		cs->move_pages = 0;
 
 	err = copy_out_args(cs, &req->out, nbytes);
+	if (req->in.h.opcode == FUSE_CANONICAL_PATH) {
+		char *path = (char *)req->out.args[0].value;
+
+		path[req->out.args[0].size - 1] = 0;
+		req->out.h.error = kern_path(path, 0, req->canonical_path);
+	}
 	fuse_copy_finish(cs);
 
 	spin_lock(&fpq->lock);
@@ -2162,6 +2180,10 @@ void fuse_abort_conn(struct fuse_conn *fc)
 {
 	struct fuse_iqueue *fiq = &fc->iq;
 
+	/* @fs.sec -- d7bd5cc97a05d48e04defc719fbaffefdd4e6f22 -- */
+	ST_LOG("<%s> dev = %u:%u  fuse abort all requests",
+			__func__, MAJOR(fc->dev), MINOR(fc->dev));
+
 	spin_lock(&fc->lock);
 	if (fc->connected) {
 		struct fuse_dev *fud;
@@ -2222,7 +2244,7 @@ EXPORT_SYMBOL_GPL(fuse_abort_conn);
 
 void fuse_wait_aborted(struct fuse_conn *fc)
 {
-	wait_event(fc->blocked_waitq, atomic_read(&fc->num_waiting) == 0);
+	fuse_wait_event(fc->blocked_waitq, atomic_read(&fc->num_waiting) == 0);
 }
 
 int fuse_dev_release(struct inode *inode, struct file *file)
