@@ -13,6 +13,7 @@
 *.o
 *.o.*
 *.a
+*.bin
 *.s
 *.ko
 *.so
@@ -23,8 +24,6 @@
 *.symtypes
 *.order
 *.elf
-*.bin
-*.tar
 *.gz
 *.bz2
 *.lzma
@@ -33,34 +32,27 @@
 *.lzo
 *.patch
 *.gcno
-*.ll
-modules.builtin
 Module.symvers
 *.dwo
-*.su
 
 #
 # Top-level generic files
 #
+/build_kernel.sh
 /tags
 /TAGS
 /linux
 /vmlinux
-/vmlinux.32
-/vmlinux-gdb.py
 /vmlinuz
 /System.map
 /Module.markers
+/toolchain
+/out
 
 #
 # Debian directory (make deb-pkg)
 #
 /debian/
-
-#
-# tar directory (make tar*-pkg)
-#
-/tar-install/
 
 #
 # git files that we don't want to ignore even it they are dot-files
@@ -92,9 +84,6 @@ GRTAGS
 GSYMS
 GTAGS
 
-# id-utils files
-ID
-
 *.orig
 *~
 \#*#
@@ -103,7 +92,6 @@ ID
 # Leavings from module signing
 #
 extra_certificates
-signing_key.pem
 signing_key.priv
 signing_key.x509
 x509.genkey
@@ -111,5 +99,11 @@ x509.genkey
 # Kconfig presets
 all.config
 
-# Kdevelop4
-*.kdev4
+# Gator Daemon files
+tools/gator/daemon/defaults_xml.h
+tools/gator/daemon/escape
+tools/gator/daemon/events.xml
+tools/gator/daemon/events_xml.h
+
+# defex_lsm
+security/samsung/defex_lsm/*
