@@ -43,7 +43,7 @@
 			};
 
 			s6e8fc0: s6e8fc0 {
-				mode = <0>; /* 0: video mode, 1: DP command mode, 2: MIPI command mode */
+				mode = <2>; /* 0: video mode, 1: DP command mode, 2: MIPI command mode */
 				resolution = <1080 2340>;
 				size = <63 135>;	/* 62.532 x 135.486 */
 				timing,refresh = <60>;
@@ -73,7 +73,7 @@
 };
 
 &decon_f {
-	psr_mode = <0>;		/* 0: video mode, 1: DP command mode, 2: MIPI command mode */
+	psr_mode = <2>;		/* 0: video mode, 1: DP command mode, 2: MIPI command mode */
 	trig_mode = <1>;	/* 0: hw trigger, 1: sw trigger */
 	dsi_mode = <0>;		/* 0: single dsi, 1: dual dsi */
 };
