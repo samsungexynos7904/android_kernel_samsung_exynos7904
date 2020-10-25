@@ -16,7 +16,7 @@
 			decon_board_s6e8fc0: decon_board_s6e8fc0 {
 				gpio_pcd = <&gpa2 5 0x1>;	/* EL_ON1_DET */
 				gpio_err = <&gpa1 1 0x1>;	/* FG_ERR */
-				gpio_con = <&gpg3 0 0x0>;	/* LCD_CON */
+				gpio_con = <&gpa0 6 0x0>;	/* OCTA_DET */
 
 				gpio_lcd_1p8 = <&gpg1 4 0>;
 				gpio_lcd_3p0 = <&gpg1 2 0>;
