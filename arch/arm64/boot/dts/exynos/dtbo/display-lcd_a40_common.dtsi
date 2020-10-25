@@ -61,7 +61,6 @@
 				dsc_slice_num = <0>;	/* count of dsc slice */
 				data_lane = <4>;	/* number of using data lane */
 				vt_compensation = <963>;	/* for underrun detect at command mode */
-				clklane_onoff = <1>;
 				decon_board = <&decon_board_s6e8fc0>;
 			};
 		};
