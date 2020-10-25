@@ -47,7 +47,7 @@
 				resolution = <1080 2340>;
 				size = <63 135>;	/* 62.532 x 135.486 */
 				timing,refresh = <60>;
-				timing,h-porch = <14 30 10>;
+				timing,h-porch = <50 50 50>;
 				timing,v-porch = <5 25 2>;
 				timing,dsi-hs-clk = <1194>;
 				timing,pms = <2 92 0>;
