@@ -59,7 +59,6 @@
 				timing,dsi-hs-clk = <1202>;
 				timing,pms = <4 185 0>;
 				timing,dsi-escape-clk = <16>;
-				update_min = <1080 2>;
 				mic_en = <0>;		/* 0: Disable, 1: Enable */
 				mic_ratio = <0>;	/* 0: 1/2 mic, 1: 1/3 mic */
 				mic_ver = <0>;		/* 0: mic v1.1, 1: v1.2, 2: v2.0 */
