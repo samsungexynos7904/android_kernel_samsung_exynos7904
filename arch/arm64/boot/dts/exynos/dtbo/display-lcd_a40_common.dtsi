@@ -54,7 +54,9 @@
 				resolution = <1080 2340>;
 				size = <63 135>;	/* 62.532 x 135.486 */
 				timing,refresh = <60>;
+				/* HBP HFP HSW */
 				timing,h-porch = <14 30 10>;
+				/* VBP VFP VSW */
 				timing,v-porch = <5 25 2>;
 				timing,dsi-hs-clk = <1202>;
 				timing,pms = <4 185 0>;
@@ -68,7 +70,6 @@
 				dsc_slice_num = <0>;	/* count of dsc slice */
 				data_lane = <4>;	/* number of using data lane */
 				cmd_underrun_lp_ref = <963>;	/* for underrun detect at command mode */
-				clklane_onoff = <1>;
 				decon_board = <&decon_board_s6e8fc0>;
 			};
 		};
