@@ -137,7 +137,7 @@ static int ext4_protect_reserved_inode(struct super_block *sb, u32 ino)
 	if ((ino < EXT4_ROOT_INO) ||
 	    (ino > le32_to_cpu(sbi->s_es->s_inodes_count)))
 		return -EINVAL;
-	inode = ext4_iget(sb, ino, EXT4_IGET_SPECIAL);
+	inode = ext4_iget(sb, ino);
 	if (IS_ERR(inode))
 		return PTR_ERR(inode);
 	num = (inode->i_size + sb->s_blocksize - 1) >> sb->s_blocksize_bits;
