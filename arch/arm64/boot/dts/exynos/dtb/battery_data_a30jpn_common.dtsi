@@ -380,10 +380,10 @@
 				battery,mix_high_temp_recovery = <390>;
 
 				battery,chg_heating_prevention_method = <1>; /* SEC_BATTERY_BY_CHANGING_CURRENT */
-				battery,chg_high_temp = <495>;
-				battery,chg_high_temp_recovery = <475>;
+				battery,chg_high_temp = <450>;
+				battery,chg_high_temp_recovery = <430>;
 				battery,chg_input_limit_current = <1000>;
-				battery,chg_charging_limit_current = <1500>;
+				battery,chg_charging_limit_current = <1400>;
 
 				/* SEC_BATTERY_FULL_CONDITION_SOC |
 				 * SEC_BATTERY_FULL_CONDITION_NOTIMEFULL |
@@ -467,6 +467,7 @@
 				io-channel-names = "adc-temp", "adc-in-bat";
 				#io-channel-cells = <5>;
 				io-channel-ranges;
+
 				battery,ttf_hv_charge_current = <2120>;
 				battery,ttf_capacity = <3400>;
 				battery,cv_data = <
@@ -529,7 +530,7 @@
  *  34	CABLE_MAX,
  */
 			cable-info {
-				default_input_current = <1050>;
+				default_input_current = <1800>;
 				default_charging_current = <2100>;
 				full_check_current_1st = <400>;
 				full_check_current_2nd = <200>;
@@ -548,7 +549,7 @@
 
 				current_group_3 {
 					cable_number = <5 32>;
-					input_current = <1050>;
+					input_current = <1500>;
 					charging_current = <1500>;
 				};
 
@@ -584,7 +585,7 @@
 
 				current_group_9 {
 					cable_number = <26>;
-					input_current = <1050>;
+					input_current = <2000>;
 					charging_current = <1800>;
 				};
 
